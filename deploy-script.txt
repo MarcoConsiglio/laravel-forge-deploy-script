@@ -1,0 +1,42 @@
+cd /home/forge/yourdomain.com
+git pull origin master
+# Turn on maintenance mode
+php artisan down
+
+# Pull the latest changes from the git repository
+git pull origin master
+
+# Install/update composer dependecies
+$FORGE_COMPOSER install --no-interaction --prefer-dist --optimize-autoloader
+
+# Whaddaffuck?
+( flock -w 10 9 || exit 1
+    echo 'Restarting FPM...'; sudo -S service $FORGE_PHP_FPM reload ) 9>/tmp/fpmlock
+
+if [ -f artisan ]; then
+    # Run database migrations
+    $FORGE_PHP artisan migrate --force
+    
+    # Clear caches
+    $FORGE_PHP artisan cache:clear
+    
+    # Clear expired password reset tokens
+    $FORGE_PHP artisan auth:clear-resets
+    
+    # Clear and cache routes
+    $FORGE_PHP artisan route:clear
+    $FORGE_PHP artisan route:cache
+    
+    # Clear and cache config
+    $FORGE_PHP artisan config:clear
+    $FORGE_PHP artisan config:cache
+    
+    # Install node modules
+    # npm install
+    
+    # Build assets using Laravel Mix
+    # npm run production
+    
+    # Turn off maintenance mode
+    $FORGE_PHP artisan up
+fi
