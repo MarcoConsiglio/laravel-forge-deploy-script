@@ -1,13 +1,13 @@
-cd /home/forge/yourdomain.com
+cd /home/forge/<mydomain.com>
 git pull origin master
 # Turn on maintenance mode
-php artisan down
+$FORGE_PHP artisan down
 
 # Pull the latest changes from the git repository
 git pull origin master
 
 # Install/update composer dependecies
-$FORGE_COMPOSER install --no-interaction --prefer-dist --optimize-autoloader
+$FORGE_COMPOSER install --no-interaction --prefer-dist --optimize-autoloader --no-dev
 
 # Whaddaffuck?
 ( flock -w 10 9 || exit 1
@@ -32,10 +32,10 @@ if [ -f artisan ]; then
     $FORGE_PHP artisan config:cache
     
     # Install node modules
-    # npm install
+    npm install
     
     # Build assets using Laravel Mix
-    # npm run production
+    npm run production
     
     # Turn off maintenance mode
     $FORGE_PHP artisan up
